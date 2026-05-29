@@ -4,31 +4,34 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\Task;
+use App\Contracts\TaskServiceInterface;
+use App\Http\Requests\StoreTaskRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+    public function __construct(
+        private readonly TaskServiceInterface $taskService,
+    ) {}
+
     public function index(): JsonResponse
     {
-        return response()->json(Task::latest()->get());
+        return response()->json(
+            array_map(fn ($dto) => $dto->toArray(), $this->taskService->list()),
+        );
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreTaskRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-        ]);
-
-        $task = Task::create($data);
-
-        return response()->json($task->refresh(), 201);
+        return response()->json(
+            $this->taskService->create($request->toDto())->toArray(),
+            201,
+        );
     }
 
-    public function destroy(Task $task): JsonResponse
+    public function destroy(int $task): JsonResponse
     {
-        $task->delete();
+        $this->taskService->delete($task);
 
         return response()->json(null, 204);
     }
