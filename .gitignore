@@ -12,6 +12,7 @@ backend/storage/framework/views/
 # Frontend
 frontend/node_modules/
 frontend/dist/
+frontend/.angular/
 
 # OS
 .DS_Store
