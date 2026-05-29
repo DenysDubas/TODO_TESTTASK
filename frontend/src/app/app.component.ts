@@ -12,6 +12,8 @@ import { TaskService } from './services/task.service';
 export class AppComponent implements OnInit {
   tasks: Task[] = [];
   newTitle = '';
+  editingId: number | null = null;
+  editTitle = '';
   error = '';
 
   constructor(private taskService: TaskService) {}
@@ -46,10 +48,45 @@ export class AppComponent implements OnInit {
     });
   }
 
+  startEdit(task: Task): void {
+    this.editingId = task.id;
+    this.editTitle = task.title;
+  }
+
+  cancelEdit(): void {
+    this.editingId = null;
+    this.editTitle = '';
+  }
+
+  saveEdit(): void {
+    if (this.editingId === null) {
+      return;
+    }
+
+    const title = this.editTitle.trim();
+    if (!title) {
+      return;
+    }
+
+    this.taskService.updateTask(this.editingId, title).subscribe({
+      next: (updated) => {
+        this.tasks = this.tasks.map((task) =>
+          task.id === updated.id ? updated : task,
+        );
+        this.cancelEdit();
+        this.error = '';
+      },
+      error: () => (this.error = 'Could not update task'),
+    });
+  }
+
   removeTask(id: number): void {
     this.taskService.deleteTask(id).subscribe({
       next: () => {
         this.tasks = this.tasks.filter((task) => task.id !== id);
+        if (this.editingId === id) {
+          this.cancelEdit();
+        }
         this.error = '';
       },
       error: () => (this.error = 'Could not delete task'),

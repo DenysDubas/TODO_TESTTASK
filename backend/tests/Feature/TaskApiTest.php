@@ -35,6 +35,32 @@ class TaskApiTest extends TestCase
             ->assertJsonValidationErrors(['title']);
     }
 
+    public function test_can_update_task(): void
+    {
+        $task = Task::factory()->create(['title' => 'Old title']);
+
+        $this->putJson("/api/tasks/{$task->id}", ['title' => 'New title'])
+            ->assertOk()
+            ->assertJsonFragment(['title' => 'New title']);
+
+        $this->assertDatabaseHas('tasks', ['id' => $task->id, 'title' => 'New title']);
+    }
+
+    public function test_update_task_requires_title(): void
+    {
+        $task = Task::factory()->create();
+
+        $this->putJson("/api/tasks/{$task->id}", [])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['title']);
+    }
+
+    public function test_update_nonexistent_task_returns_404(): void
+    {
+        $this->putJson('/api/tasks/999', ['title' => 'Nope'])
+            ->assertNotFound();
+    }
+
     public function test_can_delete_task(): void
     {
         $task = Task::factory()->create();

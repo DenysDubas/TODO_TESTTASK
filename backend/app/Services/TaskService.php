@@ -8,6 +8,7 @@ use App\Contracts\TaskRepositoryInterface;
 use App\Contracts\TaskServiceInterface;
 use App\DTOs\CreateTaskDto;
 use App\DTOs\TaskDto;
+use App\DTOs\UpdateTaskDto;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 final class TaskService implements TaskServiceInterface
@@ -27,6 +28,17 @@ final class TaskService implements TaskServiceInterface
     public function create(CreateTaskDto $dto): TaskDto
     {
         return TaskDto::fromModel($this->tasks->create($dto));
+    }
+
+    public function update(int $id, UpdateTaskDto $dto): TaskDto
+    {
+        $task = $this->tasks->findById($id);
+
+        if ($task === null) {
+            throw new ModelNotFoundException();
+        }
+
+        return TaskDto::fromModel($this->tasks->update($task, $dto));
     }
 
     public function delete(int $id): void

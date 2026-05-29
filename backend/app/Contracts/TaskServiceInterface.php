@@ -6,6 +6,7 @@ namespace App\Contracts;
 
 use App\DTOs\CreateTaskDto;
 use App\DTOs\TaskDto;
+use App\DTOs\UpdateTaskDto;
 
 interface TaskServiceInterface
 {
@@ -13,6 +14,8 @@ interface TaskServiceInterface
     public function list(): array;
 
     public function create(CreateTaskDto $dto): TaskDto;
+
+    public function update(int $id, UpdateTaskDto $dto): TaskDto;
 
     public function delete(int $id): void;
 }

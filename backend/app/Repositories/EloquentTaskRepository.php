@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\Contracts\TaskRepositoryInterface;
 use App\DTOs\CreateTaskDto;
+use App\DTOs\UpdateTaskDto;
 use App\Models\Task;
 
 final class EloquentTaskRepository implements TaskRepositoryInterface
@@ -23,6 +24,13 @@ final class EloquentTaskRepository implements TaskRepositoryInterface
     public function create(CreateTaskDto $dto): Task
     {
         $task = Task::query()->create(['title' => $dto->title]);
+
+        return $task->refresh();
+    }
+
+    public function update(Task $task, UpdateTaskDto $dto): Task
+    {
+        $task->update(['title' => $dto->title]);
 
         return $task->refresh();
     }

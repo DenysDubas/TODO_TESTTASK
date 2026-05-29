@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Contracts\TaskServiceInterface;
 use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use Illuminate\Http\JsonResponse;
 
 class TaskController extends Controller
@@ -26,6 +27,13 @@ class TaskController extends Controller
         return response()->json(
             $this->taskService->create($request->toDto())->toArray(),
             201,
+        );
+    }
+
+    public function update(UpdateTaskRequest $request, int $task): JsonResponse
+    {
+        return response()->json(
+            $this->taskService->update($task, $request->toDto())->toArray(),
         );
     }
 

@@ -27,23 +27,56 @@
     } @else {
       <ul class="space-y-2">
         @for (task of tasks; track task.id) {
-          <li
-            class="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2"
-          >
-            <span
-              class="text-slate-800"
-              [class.line-through]="task.is_done"
-              [class.text-slate-400]="task.is_done"
-            >
-              {{ task.title }}
-            </span>
-            <button
-              type="button"
-              (click)="removeTask(task.id)"
-              class="rounded-md px-3 py-1 text-sm text-red-600 hover:bg-red-50"
-            >
-              Delete
-            </button>
+          <li class="rounded-lg border border-slate-200 px-3 py-2">
+            @if (editingId === task.id) {
+              <form (ngSubmit)="saveEdit()" class="flex flex-wrap items-center gap-2">
+                <input
+                  type="text"
+                  name="editTitle"
+                  [(ngModel)]="editTitle"
+                  class="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-1.5 text-slate-800 outline-none focus:border-slate-500"
+                />
+                <button
+                  type="submit"
+                  class="rounded-md bg-slate-800 px-3 py-1 text-sm text-white hover:bg-slate-700"
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  (click)="cancelEdit()"
+                  class="rounded-md px-3 py-1 text-sm text-slate-600 hover:bg-slate-100"
+                >
+                  Cancel
+                </button>
+              </form>
+            } @else {
+              <div class="flex items-center justify-between gap-2">
+                <span
+                  class="text-slate-800"
+                  [class.line-through]="task.is_done"
+                  [class.text-slate-400]="task.is_done"
+                >
+                  {{ task.title }}
+                </span>
+                <div class="flex shrink-0 gap-1">
+                  <button
+                    type="button"
+                    (click)="startEdit(task)"
+                    class="rounded-md px-3 py-1 text-sm text-slate-600 hover:bg-slate-100"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    (click)="removeTask(task.id)"
+                    class="rounded-md px-3 py-1 text-sm text-red-600 hover:bg-red-50"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            }
           </li>
         }
       </ul>
